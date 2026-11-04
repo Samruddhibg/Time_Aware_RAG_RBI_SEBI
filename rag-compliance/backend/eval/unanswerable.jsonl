@@ -1,0 +1,15 @@
+{"question": "What is the RBI-mandated interest rate for inter-bank borrowing in the secondary market?", "expected_refusal": true, "reason": "Not defined in any available circular"}
+{"question": "How many members must a SEBI-registered hedge fund advisory committee have?", "expected_refusal": true, "reason": "Hedge fund advisory committee membership not in SEBI circulars"}
+{"question": "What is the penalty for a bank employee who personally discloses customer data?", "expected_refusal": true, "reason": "Individual employee penalties not covered in bank circulars"}
+{"question": "What is the IRDAI guideline for bancassurance commission rates?", "expected_refusal": true, "reason": "IRDAI (insurance) not in corpus — only RBI/SEBI"}
+{"question": "What does RBI say about cryptocurrency trading limits for retail investors?", "expected_refusal": true, "reason": "Crypto trading limits for retail not explicitly stated"}
+{"question": "What is the minimum salary of a compliance officer at a scheduled bank?", "expected_refusal": true, "reason": "Salary not covered in regulatory circulars"}
+{"question": "How many equity analysts work at SEBI headquarters?", "expected_refusal": true, "reason": "Internal staffing not a regulatory disclosure"}
+{"question": "What is the RBI governor's tenure as mandated by circular?", "expected_refusal": true, "reason": "Governor tenure not covered in operational circulars"}
+{"question": "Which bank in India has the highest NPA ratio as per RBI data?", "expected_refusal": true, "reason": "Specific bank NPA data not in static circular corpus"}
+{"question": "What is SEBI's policy on meme stocks and social media pump-and-dump schemes specifically?", "expected_refusal": true, "reason": "No specific meme stock circular exists in corpus"}
+{"question": "What is the monthly reporting deadline for gold imports under RBI foreign exchange rules?", "expected_refusal": true, "reason": "Monthly deadline specifics may not be in available circulars"}
+{"question": "How does RBI calculate the repo rate on non-banking days?", "expected_refusal": true, "reason": "Repo rate calculation mechanics not in compliance circulars"}
+{"question": "What is the SEBI penalty for insider trading using a family member's account?", "expected_refusal": true, "reason": "Specific case-based penalty not in generic circulars"}
+{"question": "What is the RBI circular number issued in 2099 about digital rupee?", "expected_refusal": true, "reason": "Future circular does not exist"}
+{"question": "How many banks have been granted in-principle approval by RBI this year?", "expected_refusal": true, "reason": "Dynamic data not in static document corpus"}

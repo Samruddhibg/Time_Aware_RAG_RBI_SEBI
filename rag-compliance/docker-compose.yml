@@ -1,0 +1,128 @@
+# ── Shared env anchor ─────────────────────────────────────────────────────────
+x-db-env: &db-env
+  POSTGRES_USER: ${POSTGRES_USER:-postgres}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-samruddhi}
+  POSTGRES_DB: ${POSTGRES_DB:-rag_comp}
+
+services:
+
+  # ── PostgreSQL + pgvector ────────────────────────────────────────────────────
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/ingest/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-rag_comp}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+  # ── FastAPI backend ──────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        EMBED_MODEL: ${EMBED_MODEL:-BAAI/bge-small-en-v1.5}
+    image: rag-compliance-backend:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-samruddhi}@db:5432/${POSTGRES_DB:-rag_comp}
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./data:/app/data:ro
+      - ./models:/app/models:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+
+  # ── Ollama (local LLM) ───────────────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    entrypoint: >
+      sh -c "ollama serve &
+             sleep 5 &&
+             ollama pull ${LLM_MODEL:-llama3.2:3b} &&
+             wait"
+    deploy:
+      resources:
+        limits:
+          memory: 6g
+    profiles:
+      - ollama
+
+  # ── React frontend (production build via nginx) ──────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    image: rag-compliance-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # ── Ingest worker (run-once container) ──────────────────────────────────────
+  ingest:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: rag-compliance-backend:latest
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-samruddhi}@db:5432/${POSTGRES_DB:-rag_comp}
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+        echo 'Running RBI ingest...' &&
+        python -m ingest.build_index --dir data/raw/rbi --regulator RBI &&
+        echo 'Running SEBI ingest...' &&
+        python -m ingest.build_index --dir data/raw/sebi --regulator SEBI &&
+        echo 'Ingest complete.'
+      "
+    profiles:
+      - ingest
+
+volumes:
+  pgdata:
+    driver: local
+  ollama_data:
+    driver: local

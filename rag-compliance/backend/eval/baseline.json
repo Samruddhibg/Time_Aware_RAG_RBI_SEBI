@@ -1,0 +1,14 @@
+{
+  "configuration": "off_the_shelf_dense_only",
+  "embed_model": "BAAI/bge-small-en-v1.5",
+  "recall_at_1": null,
+  "recall_at_5": null,
+  "recall_at_10": null,
+  "mrr_at_10": null,
+  "ndcg_at_10": null,
+  "stale_answer_rate": null,
+  "refusal_precision": null,
+  "refusal_recall": null,
+  "median_latency_ms": null,
+  "note": "Fill with measured numbers after running retrieval_eval.py and generation_eval.py. Never publish a number you cannot reproduce."
+}

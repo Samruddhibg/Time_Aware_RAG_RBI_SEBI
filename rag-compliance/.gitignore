@@ -1,0 +1,45 @@
+## Raw documents (add your PDFs here — do NOT commit to git)
+data/raw/
+
+## Model checkpoints (large files — use HF Hub or DVC)
+models/
+
+## Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+## Node
+node_modules/
+dist/
+.vite/
+
+## Environment
+.env
+*.local
+
+## IDE
+.vscode/
+.idea/
+*.swp
+
+## Logs & results (commit only final versions)
+*.log
+eval/retrieval_results.json
+eval/generation_results.json
+data/training/
+
+## OS
+.DS_Store
+Thumbs.db
